@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marekio</title>
+
+    <script>
+        // localStorage.setItem('API_BASEURL', 'http://localhost:8080');
+        localStorage.setItem('API_BASEURL', 'https://marekio.habarataku.my.id');
+    </script>
+    
+    <link rel="stylesheet" href="/libs/onsenui/css/onsenui.css">
+    <link rel="stylesheet" href="/libs/onsenui/css/onsen-css-components.min.css">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/css/form.css">
+    <link rel="stylesheet" href="/css/card.css">
+    <script src="/libs/onsenui/js/onsenui.min.js"></script>
+    <script src="/libs/jquery/jquery.min.js"></script>
+    <script src="/ons.js"></script>
+</head>
+
+<body>
+
+    <!-- # Main Navigator -->
+    <ons-navigator swipeable id="appNavigator">
+        <ons-page>
+            <ons-splitter id="appSplitter">
+                <ons-splitter-content page="tabbar.html"></ons-splitter-content>
+            </ons-splitter>
+        </ons-page>
+    </ons-navigator>
+    <!-- // Main Navigator -->
+
+    <!-- # Tabbar -->
+    <template id="tabbar.html">
+        <ons-page id="tabbar">
+            <ons-tabbar animation="slide">
+                <ons-tab page="produk.html" icon="md-home" label="Produk">
+                </ons-tab>
+                <ons-tab page="orderan.html" icon="md-receipt" label="Orderan">
+                </ons-tab>
+            </ons-tabbar>
+        </ons-page>
+    </template>
+    <!-- // Tabbar -->
+
+    <!-- # Form Add Produk -->
+    <template id="form-produk.html">
+        <ons-page id="form-produk">
+            <ons-toolbar>
+                <div class="left">
+                    <ons-back-button>Kembali</ons-back-button>
+                </div>
+                <div class="center">Form Produk</div>
+                <div class="right">
+                    <ons-toolbar-button onclick="tambahProduct()">Simpan</ons-toolbar-button>
+                </div>
+            </ons-toolbar>
+            <section id="form-add-section"><ons-card>
+                    <form id="form_product">
+                        <div class="mb-4">
+                            <input class="form-input" type="text" name="product_nama"
+                                placeholder="Nama Makanan / Minuman" />
+                        </div>
+                        <div class="mb-4">
+                            <input class="form-input" name="product_harga" type="number" placeholder="Harga" />
+                        </div>
+                        <div class="mb-4">
+                            <textarea class="form-input" name="product_desc" rows="12"
+                                placeholder="Deskripsi"></textarea>
+                        </div>
+                        <div class="mb-4">
+                            <img id="imgpreview" class="d-none w-100" />
+                            <input type="file" onchange="previewImage(this)" id="imguploadbaru" accept="image/*"
+                                name="product_img" class="d-none" />
+                            <ons-button modifier="large" onclick="tambahImgBaru()">Upload Gambar</ons-button>
+                        </div>
+                    </form>
+                </ons-card></section>
+            <script src="/js/form-product.js"></script>
+        </ons-page>
+    </template>
+    <!-- // Form Produk -->
+
+    <!-- # Form Edit Produk -->
+    <template id="form-edit.html">
+        <ons-page id="form-edit">
+            <ons-toolbar>
+                <div class="left">
+                    <ons-back-button>Kembali</ons-back-button>
+                </div>
+                <div class="center">Edit Produk</div>
+                <div class="right">
+                    <ons-toolbar-button onclick="updateProduct()">Simpan</ons-toolbar-button>
+                </div>
+            </ons-toolbar>
+            <section id="form-edit-section"></section>
+            <script src="/js/form-edit.js"></script>
+        </ons-page>
+    </template>
+    <!-- // Form Edit Produk -->
+
+    <!-- # Produk Page -->
+    <template id="produk.html">
+        <ons-page id="produk">
+
+            <ons-toolbar>
+                <div class="center">Produk</div>
+                <div class="right">
+                    <ons-toolbar-button onclick="fn.pushPage({'id': 'form-produk.html', 'title': 'Tambah Produk'})">
+                        Tambah</ons-toolbar-button>
+                </div>
+            </ons-toolbar>
+
+            <ons-pull-hook id="pull-hook"></ons-pull-hook>
+            <section id="product_card_wraper"></section>
+
+            <script src="/js/produk.js"></script>
+
+        </ons-page>
+    </template>
+
+    <template id="produk-detail.html">
+        <ons-page id="produk-detail">
+            <ons-toolbar>
+                <div class="left">
+                    <ons-back-button>Kembali</ons-back-button>
+                </div>
+                <div class="center">
+                    Detail
+                </div>
+                <div class="right">
+                    <ons-toolbar-button icon="md-more-vert" id="info-button" onclick="fn.showDialog('popover-dialog')">
+                    </ons-toolbar-button>
+                </div>
+            </ons-toolbar>
+
+            <section id="product_detail_content"></section>
+
+            <ons-popover id="popover-dialog" cancelable direction="down" cover-target target="#info-button">
+                <ons-list id="popover-list">
+                    <ons-list-item class="more-options" tappable onclick="fn.hideDialog('popover-dialog')">
+                        <div class="center" onclick="fn.pushPage({'id': 'form-edit.html', 'anim' : 'PullHook'})">Edit
+                        </div>
+                    </ons-list-item>
+                    <ons-list-item class="more-options" tappable onclick="fn.hideDialog('popover-dialog')">
+                        <div class="center" onclick="createAlertDialog()">Hapus</div>
+                    </ons-list-item>
+                </ons-list>
+            </ons-popover>
+
+            <ons-alert-dialog id="my-alert-dialog" modifier="rowfooter">
+                <div class="alert-dialog-content">
+                    Ingin hapus produk ini?
+                </div>
+                <div class="alert-dialog-footer">
+                    <ons-alert-dialog-button onclick="hideAlertDialog()">Cancel</ons-alert-dialog-button>
+                    <ons-alert-dialog-button onclick="deleteProduct(localStorage.getItem('PRODUCT_DETAIL_ID'))">OK
+                    </ons-alert-dialog-button>
+                </div>
+            </ons-alert-dialog>
+
+            <script src="/js/produk-detail.js"></script>
+
+        </ons-page>
+
+    </template>
+
+    <!-- # Orderan Page -->
+    <template id="orderan.html">
+        <ons-page id="orderan">
+            <ons-toolbar>
+                <div class="center">Orderan</div>
+                <!-- <div class="right">
+                    <ons-toolbar-button id="btn-refresh-transaksi" onclick="initOrderan()">Refresh</ons-toolbar-button>
+                </div> -->
+            </ons-toolbar>
+            <ons-tabbar swipeable position="top">
+                <ons-tab page="orderan-proses.html" label="Proses"></ons-tab>
+                <ons-tab page="orderan-diantar.html" label="Diantar"></ons-tab>
+                <ons-tab page="orderan-selesai.html" label="Selesai"></ons-tab>
+            </ons-tabbar>
+            <script src="/js/orderan.js"></script>
+        </ons-page>
+    </template>
+
+    <template id="orderan-proses.html">
+        <ons-page id="orderan-proses">
+            <section id="orderan-diproses-section"></section>
+        </ons-page>
+    </template>
+
+    <template id="orderan-diantar.html">
+        <ons-page id="orderan-diantar">
+             <section id="orderan-diantar-section"></section>
+        </ons-page>
+    </template>
+
+    <template id="orderan-selesai.html">
+        <ons-page id="orderan-selesai">
+             <section id="orderan-selesai-section"></section>
+            </ons-card>
+        </ons-page>
+    </template>
+
+    <!-- # Detail Pesanan -->
+    <template id="detail-pesanan.html">
+        <ons-page id="detail-pesanan">
+            <ons-toolbar>
+                <div class="left">
+                    <ons-back-button>Kembali</ons-back-button>
+                </div>
+                <div class="center">Pesanan</div>
+                <div class="right">
+                    <ons-toolbar-button icon="md-more-vert" id="btn-popover-orderan"
+                        onclick="fn.showDialog('popover-dialog-orderan')">
+                    </ons-toolbar-button>
+                </div>
+            </ons-toolbar>
+            <section id="detail-orderan-section"></section>
+            <ons-popover id="popover-dialog-orderan" cancelable direction="down" cover-target target="#info-button">
+                <ons-list id="popover-list-orderan">
+                    <ons-list-item class="more-options" tappable>
+                        <div class="center" onclick="changePesananStatus(1)">Antar</div>
+                    </ons-list-item>
+                    <ons-list-item class="more-options" tappable>
+                        <div class="center" onclick="changePesananStatus(2)">Selesai</div>
+                    </ons-list-item>
+                </ons-list>
+            </ons-popover>
+
+            <script src="/js/orderan-detail.js"></script>
+
+        </ons-page>
+    </template>
+    <!-- // Detail Pesanan -->
+
+    <script src="/js/main.js"></script>
+
+</body>
+
+</html>
